@@ -1,0 +1,7 @@
+name = "PlateReaderCore"
+uuid = "2b4c48dc-1b92-4099-97f1-4be60df0c905"
+authors = ["TAPO (Thomas Agersten Poulsen) <tapo@novozymes.com> and contributors"]
+version = "0.1.0"
+
+[compat]
+julia = "1.5.3"
