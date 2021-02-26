@@ -3,5 +3,22 @@ uuid = "2b4c48dc-1b92-4099-97f1-4be60df0c905"
 authors = ["TAPO (Thomas Agersten Poulsen) <tapo@novozymes.com> and contributors"]
 version = "0.1.0"
 
+[deps]
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+GZip = "92fee26a-97fe-5a0c-ad85-20a5f3185b63"
+Hyperscript = "47d2ed2b-36de-50cf-bf87-49c2cf4b8b91"
+LsqFit = "2fda8390-95c7-5789-9bda-21331edee243"
+MTP = "952b76c5-a10f-4aa4-b3a1-9a1f1ece7e60"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+Setfield = "efcf1570-3423-57d1-acb7-fd33fddbac46"
+SmoothingSplines = "102930c3-cf33-599f-b3b1-9a29a5acab30"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+XLSX = "fdbf4ff8-1666-58a4-91e7-1b58723a45e0"
+
 [compat]
 julia = "1.5.3"
