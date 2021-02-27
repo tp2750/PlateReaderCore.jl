@@ -1,0 +1,10 @@
+name = "Fit"
+uuid = "675c6954-9c91-41fc-87b3-715d8c3c49fb"
+authors = ["Thomas A. Poulsen <thomas@lha66.dk>"]
+version = "0.1.0"
+
+[deps]
+ArgParse = "c7e460c6-2fb9-53a9-8c5b-16f535851c63"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+MTP = "952b76c5-a10f-4aa4-b3a1-9a1f1ece7e60"
+PlateReaderCurves = "6f2f3989-c7f3-41ed-b3c9-102d028c40aa"
