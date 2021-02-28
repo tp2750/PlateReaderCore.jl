@@ -2,7 +2,7 @@
 
 if false
     args = Dict(
-        "input_xlsxfile" => "dat_ex.xlsx",
+        "input_file" => "dat_ex.xlsx",
         "fit_file" => "/tmp/TAPO_TEST/dat_ex_fit.xlsx",
         "plot_folder" => "/tmp/TAPO_TEST/",
         "smoothing_parameter" => 1E-3,
@@ -34,7 +34,7 @@ function app_fit(args)
     end
     
     @info "Read input file"
-    dat_df = PlateReaderCurves.xlsx(args["input_xlsxfile"]; sheet = 1)
+    dat_df = PlateReaderCore.read_table(args["input_file"]; sheet = 1)
     @info "Convert from data frame"
     dat = ReaderRun(dat_df)
     @info "Fit smoothing spline"
