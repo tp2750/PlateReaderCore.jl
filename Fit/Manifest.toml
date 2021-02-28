@@ -273,6 +273,12 @@ git-tree-sha1 = "8aee6fa096b0cbdb05e71750c978b96a08c78951"
 uuid = "d2c73de3-f751-5644-a686-071e5b155ba9"
 version = "0.53.0+0"
 
+[[GZip]]
+deps = ["Libdl"]
+git-tree-sha1 = "039be665faf0b8ae36e089cd694233f5dee3f7d6"
+uuid = "92fee26a-97fe-5a0c-ad85-20a5f3185b63"
+version = "0.5.1"
+
 [[GeometryBasics]]
 deps = ["EarCut_jll", "IterTools", "LinearAlgebra", "StaticArrays", "StructArrays", "Tables"]
 git-tree-sha1 = "f574945bcabe9805b78292216279c1be910168bb"
@@ -570,6 +576,14 @@ version = "0.40.0+0"
 [[Pkg]]
 deps = ["Dates", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "UUIDs"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
+
+[[PlateReaderCore]]
+deps = ["CSV", "DataFrames", "DataFramesMeta", "Dates", "Distributions", "GZip", "Hyperscript", "LsqFit", "MTP", "Printf", "Random", "Setfield", "SmoothingSplines", "Statistics", "XLSX"]
+git-tree-sha1 = "d83c3cae71e57ed88d900d6ca9ade0030db231fc"
+repo-rev = "master"
+repo-url = ".."
+uuid = "2b4c48dc-1b92-4099-97f1-4be60df0c905"
+version = "0.1.0"
 
 [[PlateReaderCurves]]
 deps = ["CSV", "DataFrames", "DataFramesMeta", "Dates", "Distributions", "Hyperscript", "LsqFit", "MTP", "Plots", "Printf", "PyPlot", "Setfield", "SmoothingSplines", "Statistics", "XLSX"]

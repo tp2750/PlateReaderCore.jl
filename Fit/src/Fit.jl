@@ -1,6 +1,6 @@
 module Fit
 
-using PlateReaderCurves
+using PlateReaderCore
 using DataFrames
 using ArgParse
 
@@ -56,7 +56,7 @@ function real_main()
     @info "Running app!"
 
     parsed_args = parse_commandline()
-    PlateReaderCurves.app_fit(parsed_args)
+    PlateReaderCore.app_fit(parsed_args)
 
     return
 end
