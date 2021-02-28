@@ -24,9 +24,9 @@ function parse_commandline()
         "--fit_file", "-f"
             help = "Output file for fitted values"
             required = true
-        "--plot_folder", "-p"
-            help = "Folder for plots"
-            required = true
+        # "--plot_folder", "-p"
+        #     help = "Folder for plots"
+        #     required = true
         "--smoothing_parameter", "-s"
             help = "Smoothing parameter (1E-3)"
             default = 1E-3
