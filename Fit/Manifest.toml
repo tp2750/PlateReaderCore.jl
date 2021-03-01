@@ -585,14 +585,6 @@ repo-url = ".."
 uuid = "2b4c48dc-1b92-4099-97f1-4be60df0c905"
 version = "0.1.0"
 
-[[PlateReaderCurves]]
-deps = ["CSV", "DataFrames", "DataFramesMeta", "Dates", "Distributions", "Hyperscript", "LsqFit", "MTP", "Plots", "Printf", "PyPlot", "Setfield", "SmoothingSplines", "Statistics", "XLSX"]
-git-tree-sha1 = "8e03fa7dfba606c4a98aac1768964f491af3b102"
-repo-rev = "master"
-repo-url = ".."
-uuid = "6f2f3989-c7f3-41ed-b3c9-102d028c40aa"
-version = "0.1.0"
-
 [[PlotThemes]]
 deps = ["PlotUtils", "Requires", "Statistics"]
 git-tree-sha1 = "a3a964ce9dc7898193536002a6dd892b1b5a6f1d"
