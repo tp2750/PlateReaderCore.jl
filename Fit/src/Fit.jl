@@ -30,6 +30,7 @@ function parse_commandline()
         "--smoothing_parameter", "-s"
             help = "Smoothing parameter (1E-3)"
             default = 1E-3
+            arg_type = Float64
         "--normalization", "-n"
             help = "Normalization scheme: unit_step, unit_range, none. Default: unit_step"
             default = "unit_step"
