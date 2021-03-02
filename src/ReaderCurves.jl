@@ -175,7 +175,9 @@ function ReaderRun(df::DataFrame)
 end
 
 function DataFrame(rcf::ReaderCurveFit)
-    fits = DataFrame(fit_method = rcf.fit_method, slope = rcf.slope, intercept = rcf.intercept, fit_mean_absolute_residual = rcf.fit_mean_absolute_residual)
+    rc = rcf.readercurve
+    fits = DataFrame(rc.readerplate_well,
+        fit_method = rcf.fit_method, slope = rcf.slope, intercept = rcf.intercept, fit_mean_absolute_residual = rcf.fit_mean_absolute_residual)
 end
 
 function DataFrame(rpf::ReaderPlateFit)
