@@ -3,6 +3,7 @@
 if false
     args = Dict(
         "input_file" => "dat_ex.xlsx",
+        "output_file" => "/tmp/TAPO_TEST/dat_ex_slopes.xlsx",
         "fit_file" => "/tmp/TAPO_TEST/dat_ex_fit.xlsx",
         "plot_folder" => "/tmp/TAPO_TEST/",
         "smoothing_parameter" => 1E-3,
@@ -49,11 +50,18 @@ function app_fit(args)
     end
     dat_fit = rc_fit(dat, "smooth_spline", lambda = args["smoothing_parameter"], x_range= x_range, y_range = y_range) 
     @info "Convert back to data frame"
-    fit_df = DataFrame(dat_fit)
-    @info "Save fit"
-    mkpath(dirname(args["fit_file"]))
-    XLSX.writetable(args["fit_file"], collect(DataFrames.eachcol(fit_df)), DataFrames.names(fit_df); overwrite=true, sheetname = "Fits")
-    @info "Wrote " * args["fit_file"]
+    out_df = DataFrame(dat_fit)
+    @info "Save slopes"
+    mkpath(dirname(args["output_file"]))
+    XLSX.writetable(args["output_file"], collect(DataFrames.eachcol(out_df)), DataFrames.names(out_df); overwrite=true, sheetname = "Slopes")
+    @info "Wrote $(nrow(out_df)) rows to " * args["output_file"]
+    if haskey(args,"fit_file") ## also write predicted values
+        @info("Writing predicted values")
+        predict_df = DataFrame(dat_fit; predict=true)
+        mkpath(dirname(args["fit_file"]))
+        XLSX.writetable(args["fit_file"], collect(DataFrames.eachcol(predict_df)), DataFrames.names(predict_df); overwrite=true, sheetname = "Slopes")
+        @info("Wrote $(nrow(predict_df)) rows to " * args["fit_file"])
+    end
     # @info "Plot plates"
     # mkpath(dirname(args["plot_folder"]))
     # fit_filenames = String[]

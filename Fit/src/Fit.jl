@@ -21,9 +21,11 @@ function parse_commandline()
         "--input_file", "-i"
             help = "Input file with all reads. Table in xlsx, csv or csv.gz format"
             required = true
-        "--fit_file", "-f"
-            help = "Output file for fitted values"
+        "--output_file", "-o"
+            help = "Output file for slopes etc"
             required = true
+        "--fit_file", "-f"
+            help = "Output file for fitted values (predicted)"
         # "--plot_folder", "-p"
         #     help = "Folder for plots"
         #     required = true

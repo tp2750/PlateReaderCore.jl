@@ -174,19 +174,27 @@ function ReaderRun(df::DataFrame)
               readerplates = plates)
 end
 
-function DataFrame(rcf::ReaderCurveFit)
+function DataFrame(rcf::ReaderCurveFit;predict=false)
     rc = rcf.readercurve
-    fits = DataFrame(rc.readerplate_well,
-        fit_method = rcf.fit_method, slope = rcf.slope, intercept = rcf.intercept, fit_mean_absolute_residual = rcf.fit_mean_absolute_residual)
+    if predict
+        fits = DataFrame(readerplate_well = rc.readerplate_well,
+                         kinetic_time = rcf.readercurve.kinetic_time, predicted_value =  rcf.predict.(rcf.readercurve.kinetic_time))
+        return(fits)
+    else
+        fits = DataFrame(readerplate_well = rc.readerplate_well,
+                     fit_method = rcf.fit_method, slope = rcf.slope, intercept = rcf.intercept, fit_mean_absolute_residual = rcf.fit_mean_absolute_residual)
+        return(fits)
+    end
+    error("ReaderCurveFit:DataFrame. This can not be reached")
 end
 
-function DataFrame(rpf::ReaderPlateFit)
-    wells = vcat([DataFrame(w) for w in rpf.readercurves]...)
+function DataFrame(rpf::ReaderPlateFit;predict=false)
+    wells = vcat([DataFrame(w;predict=predict) for w in rpf.readercurves]...)
     @transform(wells, readerplate_id = rpf.readerplate_id, readerplate_barcode = rpf.readerplate_barcode, readerfile_name = rpf.readerfile_name)
 end
 
-function DataFrame(rrf::ReaderRunFit)
-    plates = vcat([DataFrame(p) for p in rrf.readerplates]...)
+function DataFrame(rrf::ReaderRunFit;predict=false)
+    plates = vcat([DataFrame(p;predict=predict) for p in rrf.readerplates]...)
     @transform(plates, equipment = rrf.equipment, software = rrf.software, run_starttime = rrf.run_starttime, readerplate_geometry = rrf.readerplate_geometry)
 end
 
