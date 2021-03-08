@@ -198,5 +198,10 @@ end
 end
 @testset "Area undercurve" begin
     @test PlateReaderCore.area_under_curve([1,2,3,4,5,6,7,8,9], [1,2,3,4,5,6,7,8,9]) == 32
-    @test PlateReaderCore.area_under_curve([-1,9], [-1,9]) == PlateReaderCore.area_under_curve([0,10], [0,10]) 
+    @test PlateReaderCore.area_under_curve([-1,9], [-1,9]) == PlateReaderCore.area_under_curve([0,10], [0,10])
+    A01 = PlateReaderCore.sim_hill(;points = 100, xmax=1, sd=.1, seed=123, well= "A01")
+    A01_fit = rc_fit(A01, "smooth_spline";lambda = 1E-3, x_range = [0,1], y_range = [0,1])
+    @test isapprox(PlateReaderCore.area_under_curve(A01), 2.956311533459582)
+    @test isapprox(PlateReaderCore.area_under_curve(A01_fit), 2.0307829099202612)
+    @test isapprox(PlateReaderCore.area_under_curve_ratio(A01_fit),0.6869312949382456)
 end

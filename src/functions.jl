@@ -282,7 +282,7 @@ function scale_rev(X;x_range)
     X*dx + x_range[1]
 end
 
-## Simulat ea Hill-type function with slight initial cocavity
+## Simulat ea Hill-type function with slight initial concavity
 function sim_hill(; points=100, xmin = 0, xmax = 100, ymin = 0, ymax = 4, sd = 0.05, well = "A01", seed=missing)
     if !ismissing(seed)
         Random.seed!(seed)
@@ -315,3 +315,7 @@ function area_under_curve(x, y)
     Ymid = (Y[1:end-1] .+ Y[2:end])./2 ## use mid-points for area
     sum(dX .* Ymid) ## Area
 end
+
+area_under_curve(rc::ReaderCurve) = area_under_curve(rc.kinetic_time, rc.reader_value)
+area_under_curve(rcf::ReaderCurveFit) = area_under_curve(rcf.readercurve.kinetic_time, rcf.predict.(rcf.readercurve.reader_value))
+area_under_curve_ratio(rcf::ReaderCurveFit) =  area_under_curve(rcf) / area_under_curve(rcf.readercurve)
