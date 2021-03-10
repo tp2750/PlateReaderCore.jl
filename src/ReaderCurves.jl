@@ -182,7 +182,11 @@ function DataFrame(rcf::ReaderCurveFit;predict=false)
         return(fits)
     else
         fits = DataFrame(readerplate_well = rc.readerplate_well,
-                     fit_method = rcf.fit_method, slope = rcf.slope, intercept = rcf.intercept, fit_mean_absolute_residual = rcf.fit_mean_absolute_residual)
+                         fit_method = rcf.fit_method, slope = rcf.slope, intercept = rcf.intercept, fit_mean_absolute_residual = rcf.fit_mean_absolute_residual,
+                         area_under_curve_ratio = area_under_curve_ratio(rcf), area_under_readercurve = area_under_curve(rcf.readercurve), area_under_fit_curve = area_under_curve(rcf))
+        if rcf.fit_method == "smooth_spline"
+            fits = @transform(fits, smooth_spline_lambda = rcf.fit_input_parameters["lambda"]) ## add lambda to dataframe. TODO: x_range, y_range
+        end
         return(fits)
     end
     error("ReaderCurveFit:DataFrame. This can not be reached")

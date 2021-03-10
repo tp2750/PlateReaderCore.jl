@@ -204,4 +204,6 @@ end
     @test isapprox(PlateReaderCore.area_under_curve(A01), 2.956311533459582)
     @test isapprox(PlateReaderCore.area_under_curve(A01_fit), 2.0307829099202612)
     @test isapprox(PlateReaderCore.area_under_curve_ratio(A01_fit),0.6869312949382456)
+    A01_df = DataFrame(A01_fit)
+    @test first(A01_df.area_under_fit_curve) == PlateReaderCore.area_under_curve(A01_fit)
 end
