@@ -40,7 +40,7 @@ function rc_fit(rc::ReaderCurve, method::String; y_low_pct=10, y_high_pct=90, la
             ReaderCurveFit(
                 readercurve = rc,
                 fit_method = method,
-                fit_input_parameters = (;y_low_pct, y_high_pct, lambda, x_range, y_range),
+                fit_input_parameters = (;), ## TODO(; :y_low_pct => y_low_pct, :y_high_pct => y_high_pct, :lambda => lambda, :x_range => x_range, :y_range => y_range),
                 predict = t -> NaN,
                 slope = NaN,
                 intercept = NaN,
