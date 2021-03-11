@@ -44,19 +44,21 @@ end
 
 
 function real_main()
-    @show ARGS
-    @show Base.PROGRAM_FILE
-    @show DEPOT_PATH
-    @show LOAD_PATH
-    @show pwd()
-    @show Base.active_project()
-    @show Threads.nthreads()
-    @show Sys.BINDIR
+    if false
+        @show ARGS
+        @show Base.PROGRAM_FILE
+        @show DEPOT_PATH
+        @show LOAD_PATH
+        @show pwd()
+        @show Base.active_project()
+        @show Threads.nthreads()
+        @show Sys.BINDIR
 #    display(Base.loaded_modules)
-    @show unsafe_string(Base.JLOptions().image_file)
-    println()
+        @show unsafe_string(Base.JLOptions().image_file)
+        println()
+        @info "Running app!"
+    end
 
-    @info "Running app!"
 
     parsed_args = parse_commandline()
     @info "Parsed arguments"
