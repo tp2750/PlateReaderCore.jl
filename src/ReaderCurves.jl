@@ -251,7 +251,7 @@ function well96(w::String, geometry=384)
     if geometry == 96
         return(w)
     end
-    (r,c) = DataPlates.n_rc(w)
+    (r,c) = n_rc(w)
     r2 = floor(Int, (r-1)/2) +1 
     c2 = floor(Int, (c-1)/2) +1
     LETTERS[r2]*lpad(c2,2,"0")
@@ -271,7 +271,7 @@ end
     Q(::ReaderPlateFit, q; well96=false)
     subset a readerplate to a quadrant
 """
-function Q(p::ReaderPlate, q; well96=false)
+function Q(p::ReaderPlate, q; use_well96=false)
     if (p.readerplate_geometry == 96) && (q == "Q0")
         return(p)
     end
@@ -280,12 +280,12 @@ function Q(p::ReaderPlate, q; well96=false)
     sub_curves = filter(p.readercurves) do c
         Q(c.readerplate_well) == q
     end
-    if well96
+    if use_well96
         sub_curves = map(sub_curves) do w
             Setfield.@set w.readerplate_well = well96(w.readerplate_well, p.readerplate_geometry)
         end
     end
-    geometry = well96 ? 96 : p.readerplate_geometry
+    geometry = use_well96 ? 96 : p.readerplate_geometry
     ReaderPlate(
         readerplate_id = p.readerplate_id,
         readerplate_barcode = p.readerplate_barcode,
@@ -294,7 +294,7 @@ function Q(p::ReaderPlate, q; well96=false)
         readercurves = sub_curves
     )
 end
-function Q(p::ReaderPlateFit, q; well96=false)
+function Q(p::ReaderPlateFit, q; use_well96=false)
     if (p.readerplate_geometry == 96) && (q == "Q0")
         return(p)
     end
@@ -303,12 +303,12 @@ function Q(p::ReaderPlateFit, q; well96=false)
     sub_curves = filter(p.readercurves) do c
         Q(c.readercurve.readerplate_well) == q
     end
-    if well96
+    if use_well96
         sub_curves = map(sub_curves) do w
             Setfield.@set w.readercurve.readerplate_well = well96(w.readercurve.readerplate_well, p.readerplate_geometry)
         end
     end
-    geometry = well96 ? 96 : p.readerplate_geometry
+    geometry = use_well96 ? 96 : p.readerplate_geometry
     ReaderPlateFit(
         readerplate_id = p.readerplate_id,
         readerplate_barcode = p.readerplate_barcode,
