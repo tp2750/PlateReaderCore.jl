@@ -215,6 +215,38 @@ geometry(p::ReaderPlate) = p.readerplate_geometry
 well_names(p::ReaderPlateFit) =  map(x -> x.readercurve.readerplate_well, p.readercurves)
 well_names(p::ReaderPlate) =  map(x -> x.readerplate_well, p.readercurves)
 
+
+function Q(w::String, geometry = 384, type = "Z") ## Copied from MTP.jl
+    @assert type ∈ ["Z"] ## only Q1Q2\nQ3Q4 for now
+    @assert geometry ∈ [96, 384]
+    if geometry == 96
+        return("Q0")
+    end
+    r = n_row(w)
+    c = n_col(w)
+    q = mod(c-1,2) + mod(r-1,2)*2 +1
+    "Q$q"
+end
+
+function well96(w::String, geometry=384)  ## Copied from MTP.jl
+    @assert geometry ∈ [96, 384]
+    if geometry == 96
+        return(w)
+    end
+    (r,c) = DataPlates.n_rc(w)
+    r2 = floor(Int, (r-1)/2) +1 
+    c2 = floor(Int, (c-1)/2) +1
+    LETTERS[r2]*lpad(c2,2,"0")
+end
+
+function well384(w::String, geometry=384)  ## Copied from MTP.jl
+    @assert geometry ∈ [96, 384]
+    if geometry == 96
+        return(missing)
+    end
+    w
+end
+
 """
     Q(::ReaderPlate, q; well96=false)
     Q(::ReaderPlateFit, q; well96=false)
@@ -227,11 +259,11 @@ function Q(p::ReaderPlate, q; well96=false)
     @assert occursin(r"^Q[1-4]$",q)
     @assert p.readerplate_geometry == 384
     sub_curves = filter(p.readercurves) do c
-        MTP.Q(c.readerplate_well) == q
+        Q(c.readerplate_well) == q
     end
     if well96
         sub_curves = map(sub_curves) do w
-            Setfield.@set w.readerplate_well = MTP.well96(w.readerplate_well)
+            Setfield.@set w.readerplate_well = well96(w.readerplate_well)
         end
     end
     geometry = well96 ? 96 : p.readerplate_geometry
@@ -250,11 +282,11 @@ function Q(p::ReaderPlateFit, q; well96=false)
     @assert occursin(r"^Q[1-4]$",q)
     @assert p.readerplate_geometry == 384
     sub_curves = filter(p.readercurves) do c
-        MTP.Q(c.readercurve.readerplate_well) == q
+        Q(c.readercurve.readerplate_well) == q
     end
     if well96
         sub_curves = map(sub_curves) do w
-            Setfield.@set w.readercurve.readerplate_well = MTP.well96(w.readercurve.readerplate_well)
+            Setfield.@set w.readercurve.readerplate_well = well96(w.readercurve.readerplate_well)
         end
     end
     geometry = well96 ? 96 : p.readerplate_geometry
