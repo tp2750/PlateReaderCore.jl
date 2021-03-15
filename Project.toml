@@ -23,6 +23,7 @@ XLSX = "fdbf4ff8-1666-58a4-91e7-1b58723a45e0"
 
 [compat]
 CSV = "0.8"
+Distributions = "0.24"
 GZip = "0.5"
 LsqFit = "0.12"
 Setfield = "0.7"
