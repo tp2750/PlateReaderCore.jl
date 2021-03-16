@@ -48,7 +48,7 @@ function app_fit(args)
         x_range = missing
         y_range = missing
     end
-    dat_fit = rc_fit(dat, "smooth_spline", lambda = args["smoothing_parameter"], x_range= x_range, y_range = y_range) 
+    dat_fit = rc_fit(dat, "smooth_spline"; lambda = args["smoothing_parameter"], x_range= x_range, y_range = y_range) 
     @info "Convert back to data frame"
     out_df = DataFrame(dat_fit)
     @info "Save slopes"
