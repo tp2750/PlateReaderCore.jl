@@ -317,5 +317,5 @@ function area_under_curve(x, y)
 end
 
 area_under_curve(rc::ReaderCurve) = area_under_curve(rc.kinetic_time, rc.reader_value)
-area_under_curve(rcf::ReaderCurveFit) = area_under_curve(rcf.readercurve.kinetic_time, rcf.predict.(rcf.readercurve.reader_value))
+area_under_curve(rcf::ReaderCurveFit) = area_under_curve(rcf.readercurve.kinetic_time, rcf.predict.(rcf.readercurve.kinetic_time))
 area_under_curve_ratio(rcf::ReaderCurveFit) =  area_under_curve(rcf) / area_under_curve(rcf.readercurve)
