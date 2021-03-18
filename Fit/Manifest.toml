@@ -320,8 +320,10 @@ deps = ["Dates", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "R
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 
 [[PlateReaderCore]]
-deps = ["CSV", "DataFrames", "DataFramesMeta", "Dates", "Distributions", "GZip", "Hyperscript", "LsqFit", "PackageCompiler", "Printf", "Random", "Revise", "Setfield", "SmoothingSplines", "Statistics", "XLSX"]
-path = ".."
+deps = ["CSV", "DataFrames", "DataFramesMeta", "Dates", "Distributions", "GZip", "Hyperscript", "JSON", "LsqFit", "PackageCompiler", "Printf", "Random", "Revise", "Setfield", "SmoothingSplines", "Statistics", "XLSX"]
+git-tree-sha1 = "89d53f13607930bf24a6db3c948f9aed3759997f"
+repo-rev = "master"
+repo-url = ".."
 uuid = "2b4c48dc-1b92-4099-97f1-4be60df0c905"
 version = "0.1.0"
 
