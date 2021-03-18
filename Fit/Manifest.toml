@@ -321,9 +321,9 @@ uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 
 [[PlateReaderCore]]
 deps = ["CSV", "DataFrames", "DataFramesMeta", "Dates", "Distributions", "GZip", "Hyperscript", "JSON", "LsqFit", "PackageCompiler", "Printf", "Random", "Revise", "Setfield", "SmoothingSplines", "Statistics", "XLSX"]
-git-tree-sha1 = "89d53f13607930bf24a6db3c948f9aed3759997f"
+git-tree-sha1 = "659a617c50abc42885abd69f9591964ef971888d"
 repo-rev = "master"
-repo-url = ".."
+repo-url = "https://github.com/tp2750/PlateReaderCore.jl"
 uuid = "2b4c48dc-1b92-4099-97f1-4be60df0c905"
 version = "0.1.0"
 
