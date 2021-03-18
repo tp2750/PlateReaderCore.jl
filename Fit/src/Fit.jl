@@ -59,6 +59,8 @@ function real_main()
     @info "Running app!"
 
     parsed_args = parse_commandline()
+    @info "Parsed arguments"
+    @show parsed_args
     PlateReaderCore.app_fit(parsed_args)
 
     return
