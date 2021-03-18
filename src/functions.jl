@@ -10,7 +10,7 @@
 """
 function rc_fit(r::ReaderRun, method::String; y_low_pct=10, y_high_pct=90, lambda = 1E-6, l4p_parameter=100, x_range=missing, y_range=missing )
     plate_fits = map(r.readerplates) do p
-        rc_fit(p, method;y_low_pct, y_high_pct, lambda, l4p_parameter,  x_range=missing, y_range=missing)
+        rc_fit(p, method;y_low_pct=y_low_pct, y_high_pct=y_high_pct, lambda=lambda, l4p_parameter=l4p_parameter,  x_range=x_range, y_range=y_range)
     end
     ReaderRunFit(
         equipment = r.equipment,
@@ -22,7 +22,7 @@ function rc_fit(r::ReaderRun, method::String; y_low_pct=10, y_high_pct=90, lambd
 end
 function rc_fit(p::ReaderPlate, method::String; y_low_pct=10, y_high_pct=90, lambda = 1E-6, l4p_parameter=100,  x_range=missing, y_range=missing)
     curve_fits = map(p.readercurves) do rc
-        rc_fit(rc, method; y_low_pct, y_high_pct, lambda, l4p_parameter,  x_range=missing, y_range=missing)
+        rc_fit(rc, method; y_low_pct=y_low_pct, y_high_pct=y_high_pct, lambda=lambda, l4p_parameter=l4p_parameter,  x_range=x_range, y_range=y_range)
     end
     ReaderPlateFit(
         readerplate_id = p.readerplate_id,
@@ -40,7 +40,7 @@ function rc_fit(rc::ReaderCurve, method::String; y_low_pct=10, y_high_pct=90, la
             ReaderCurveFit(
                 readercurve = rc,
                 fit_method = method,
-                fit_input_parameters = (;), ## TODO(; :y_low_pct => y_low_pct, :y_high_pct => y_high_pct, :lambda => lambda, :x_range => x_range, :y_range => y_range),
+                fit_input_parameters = (; y_low_pct=y_low_pct, y_high_pct=y_high_pct, lambda=lambda, l4p_parameter=l4p_parameter,  x_range=x_range, y_range=y_range), 
                 predict = t -> NaN,
                 slope = NaN,
                 intercept = NaN,
@@ -121,7 +121,7 @@ function rc_fit(rc::ReaderCurve, method::String; y_low_pct=10, y_high_pct=90, la
             ReaderCurveFit(
                 readercurve = rc,
                 fit_method = method,
-                fit_input_parameters = (;),
+                fit_input_parameters = (;y_low_pct=y_low_pct, y_high_pct=y_high_pct, lambda=lambda, l4p_parameter=l4p_parameter,  x_range=x_range, y_range=y_range),
                 predict = pred_fun4,
                 slope = ms.slope,
                 intercept = ms.intercept,
