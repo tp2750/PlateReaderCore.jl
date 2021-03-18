@@ -92,6 +92,7 @@ function app_fit(args)
     #            m("h1", "Plate plots")
     #            )(m("div").(zip(h_fitplot_names,h_fitplot,h_pahseplot_names,h_phaseplot)))
     # savehtml(htmlfile, h_page)
+    out_df
 end
 
 Def_vals = Dict("reader_temperature" => missing,
