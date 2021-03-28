@@ -67,7 +67,7 @@ Base.@kwdef struct ReaderCurveFit
     predict::Function
     slope::Real
     intercept::Real
-    inflectionpoint::Array{}
+    inflectionpoint::NamedTuple
     fit_mean_absolute_residual::Real
 end
 
@@ -185,6 +185,8 @@ function DataFrame(rcf::ReaderCurveFit;predict=false)
                          fit_method = rcf.fit_method,
                          slope = rcf.slope,
                          intercept = rcf.intercept,
+                         inflextion_x = rcf.inflectionpoint.x,
+                         inflextion_y = rcf.inflectionpoint.y,
                          fit_mean_absolute_residual = rcf.fit_mean_absolute_residual,
                          area_under_curve_ratio = area_under_curve_ratio(rcf),
                          area_under_readercurve = area_under_curve(rcf.readercurve),

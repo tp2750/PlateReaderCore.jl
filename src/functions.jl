@@ -44,7 +44,7 @@ function rc_fit(rc::ReaderCurve, method::String; y_low_pct=10, y_high_pct=90, la
                 predict = t -> NaN,
                 slope = NaN,
                 intercept = NaN,
-                inflectionpoint = [NaN,NaN],
+                inflectionpoint = (x=NaN,y=NaN),
                 fit_mean_absolute_residual = NaN
             )
         )
@@ -62,7 +62,7 @@ function rc_fit(rc::ReaderCurve, method::String; y_low_pct=10, y_high_pct=90, la
                 predict = pred_fun1,
                 slope = f1.slope,
                 intercept = f1.intercept,
-                inflectionpoint = [X[min_res_idx], Y[min_res_idx]],
+                inflectionpoint = (x=X[min_res_idx], y=Y[min_res_idx]),
                 fit_mean_absolute_residual = mean(abs.(pred_fun1.(X) .- Y))
             )
         )
@@ -204,13 +204,13 @@ end
 function max_slope(x,y)
     X,Y = get_finite(x,y)
     if(length(Y) == 0)
-        return(intercept = NaN, slope = NaN, inflectionpoint = NaN)
+        return(intercept = NaN, slope = NaN, inflectionpoint = (x=NaN,y=NaN))
     end
     slopes = diff(Y) ./ diff(X)
     slope = maximum(slopes)
     slope_idx = findfirst(slopes .== slope)    
     b = y[slope_idx] - slope * x[slope_idx]
-    (intercept = b,slope = slope, inflectionpoint = [x[slope_idx], y[slope_idx]])
+    (intercept = b,slope = slope, inflectionpoint = (x=x[slope_idx], y=y[slope_idx]))
 end
 
 function get_finite(x,y)

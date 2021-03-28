@@ -204,8 +204,10 @@ end
     A01 = PlateReaderCore.sim_hill(;points = 100, xmax=1, sd=.1, seed=123, well= "A01")
     A01_fit = rc_fit(A01, "smooth_spline";lambda = 1E-3, x_range = [0,1], y_range = [0,1])
     @test isapprox(PlateReaderCore.area_under_curve(A01), 2.956311533459582)
-    @test isapprox(PlateReaderCore.area_under_curve(A01_fit), 2.0307829099202612)
-    @test isapprox(PlateReaderCore.area_under_curve_ratio(A01_fit),0.6869312949382456)
+    @test isapprox(PlateReaderCore.area_under_curve(A01_fit), 3.129659810893514) ## 2.0307829099202612)
+    @test isapprox(PlateReaderCore.area_under_curve_ratio(A01_fit), 1.0586366746102274) ## 0.6869312949382456)
     A01_df = DataFrame(A01_fit)
     @test first(A01_df.area_under_fit_curve) == PlateReaderCore.area_under_curve(A01_fit)
+    @test isapprox(A01_fit.inflectionpoint.x, 0.11)
+    @test isapprox(A01_fit.inflectionpoint.y, 1.137950052588875)
 end
