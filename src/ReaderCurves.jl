@@ -11,9 +11,9 @@
 """
 Base.@kwdef struct ReaderCurve
     readerplate_well::String = "well"
-    kinetic_time::Array{Real}
-    reader_value::Array{Real} ## Use Inf, -Inf, NaN rather than Union{Missing, Real}}
-    reader_temperature::Array{Union{Missing, Real}} = [missing]
+    kinetic_time::Array{Float64,1}
+    reader_value::Array{Float64,1} ## Use Inf, -Inf, NaN rather than Union{Missing, Real}}
+    reader_temperature::Array{Union{Missing, Float64},1} = [missing]
     time_unit::String
     value_unit::String
     temperature_unit::String = "C"
@@ -65,10 +65,10 @@ Base.@kwdef struct ReaderCurveFit
     fit_method::String
     fit_input_parameters::NamedTuple
     predict::Function
-    slope::Real
-    intercept::Real
+    slope::Float64
+    intercept::Float64
     inflectionpoint::NamedTuple
-    fit_mean_absolute_residual::Real
+    fit_mean_absolute_residual::Float64
 end
 
 abstract type AbstractPlate end
@@ -79,14 +79,14 @@ abstract type AbstractPlate end
     readerplate_barcode::String  can be ""
     readerfile_name::String
     readerplate_geometry::Int  96, 384
-    readercurves::Array{ReaderCurve} array of reader curves
+    readercurves::Array{ReaderCurve,1} array of reader curves
 """
 Base.@kwdef struct ReaderPlate <: AbstractPlate
     readerplate_id::String ## globally unique eg from UUIDs.uuid4()
     readerplate_barcode::String ## can be ""
     readerfile_name::String
-    readerplate_geometry::Int ## 96, 384
-    readercurves::Array{ReaderCurve}
+    readerplate_geometry::Int64 ## 96, 384
+    readercurves::Array{ReaderCurve,1}
 end
 
 """
@@ -102,8 +102,8 @@ Base.@kwdef struct ReaderPlateFit <: AbstractPlate
     readerplate_id::String ## globally unique eg from UUIDs.uuid4()
     readerplate_barcode::String ## can be ""
     readerfile_name::String
-    readerplate_geometry::Int ## 96, 384
-    readercurves::Array{ReaderCurveFit}
+    readerplate_geometry::Int64 ## 96, 384
+    readercurves::Array{ReaderCurveFit,1}
 end
 
 function ReaderPlate(df::DataFrame)
@@ -128,7 +128,7 @@ Base.@kwdef struct ReaderFile
     equipment::String
     software::String
     run_starttime::Union{DateTime, Missing}
-    readerplates::Array{ReaderPlate} 
+    readerplates::Array{ReaderPlate,1} 
 end
 
 abstract type AbstractRun end
@@ -137,16 +137,16 @@ Base.@kwdef struct ReaderRun <: AbstractRun
     equipment::String
     software::String
     run_starttime::Union{DateTime, Missing}
-    readerplate_geometry::Int
-    readerplates::Array{ReaderPlate} 
+    readerplate_geometry::Int64
+    readerplates::Array{ReaderPlate,1} 
 end
 
 Base.@kwdef struct ReaderRunFit <: AbstractRun
     equipment::String
     software::String
     run_starttime::Union{DateTime, Missing}
-    readerplate_geometry::Int
-    readerplates::Array{ReaderPlateFit} 
+    readerplate_geometry::Int64
+    readerplates::Array{ReaderPlateFit,1} 
 end
 
 
@@ -358,7 +358,7 @@ end
     plate(r::AbstractRun, n::Int): get plate number n (starting from 1)
     plate(r::AbstractRun, name::String; search=[:readerplate_id, :readerplate_barcode]) search one or more of the fields readerplate_id, readerplate_barcode. Return first match. If partial==true, do a partial match.
 """
-function plate(r::AbstractRun, n::Int)
+function plate(r::AbstractRun, n::Int64)
     r.readerplates[n]
 end
 function plate(r::AbstractRun,name::String; search=[:readerplate_id, :readerplate_barcode], partial=false)
