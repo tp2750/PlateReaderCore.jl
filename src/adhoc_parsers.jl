@@ -1,4 +1,4 @@
-using DataFramesMeta, Dates
+using DataFramesMeta, Dates, Printf
 ## Parsers of local fileformats
 
 Def_vals = Dict("reader_temperature" => missing,
@@ -50,3 +50,33 @@ function tsa2df(df::DataFrame; def_vals=Def_vals)
     df
 end
 tsa2run(df::DataFrame; def_vals=Def_vals) = ReaderRun(tsa2df(df; def_vals = def_vals))
+
+function vipr_trhs(data_file_path::String, platecount=6, timesteps=20, geometry=96; platenames = missing, time_unit = "ms", value_unit = "Pa", read_starttime = now()) 
+    df =  PlateReaderCore.read_table(data_file_path)
+    vipr_trhs(df, platecount, timesteps, geometry; platenames = platenames, time_unit = time_unit, value_unit = value_unit, datafile = data_file_path,read_starttime = read_starttime)
+end
+function vipr_trhs(df::DataFrame, platecount=6, timesteps=20, geometry=96; platenames = missing, time_unit = "ms", value_unit = "Pa", datafile = "", read_starttime = now())
+    @assert ncol(df)-1 == platecount * timesteps * geometry ## first column is curve time-point. Each column is a vipr-curve
+    kinetic_points = df.Time
+    @debug "Found $(length(kinetic_points)) curve-points."
+    rows = Int64(sqrt(geometry/1.5))
+    cols = Int64(sqrt(geometry*1.5))
+    @assert geometry == rows * cols
+    wells = PlateReaderCore.wells(rows,cols)
+    if ismissing(platenames)
+        platenames = [@sprintf("Plate%.2d", x) for x in 1:platecount]
+    end
+    @assert length(platenames) == platecount
+    local readercurves = ReaderCurve[]
+    local readerplates = ReaderPlate[]
+    col_number = 1
+    for plate in platenames
+        for well in wells
+            col_number += 1
+            push!(readercurves, ReaderCurve(readerplate_well = well, kinetic_time = kinetic_points, reader_value = df[:,col_number], reader_temperature = repeat([missing], length(kinetic_points)), time_unit = time_unit, value_unit = value_unit, temperature_unit = "C"))
+        end
+        push!(readerplates, ReaderPlate(readerplate_id = plate, readerplate_barcode = "", readerfile_name = datafile, readerplate_geometry = geometry, readercurves = readercurves))
+        readercurves = ReaderCurve[]
+    end
+    ReaderRun(equipment="Vipr", software="", run_starttime=read_starttime, readerplate_geometry = geometry,readerplates= readerplates)
+end
