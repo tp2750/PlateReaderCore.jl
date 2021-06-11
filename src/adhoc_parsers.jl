@@ -71,12 +71,14 @@ function vipr_trhs(df::DataFrame, platecount=6, timesteps=20, geometry=96; plate
     local readerplates = ReaderPlate[]
     col_number = 1
     for plate in platenames
-        for well in wells
-            col_number += 1
-            push!(readercurves, ReaderCurve(readerplate_well = well, kinetic_time = kinetic_points, reader_value = df[:,col_number], reader_temperature = repeat([missing], length(kinetic_points)), time_unit = time_unit, value_unit = value_unit, temperature_unit = "C"))
+        for time_step in 1:timesteps
+            for well in wells
+                col_number += 1
+                push!(readercurves, ReaderCurve(readerplate_well = well, kinetic_time = kinetic_points, reader_value = df[:,col_number], reader_temperature = repeat([missing], length(kinetic_points)), time_unit = time_unit, value_unit = value_unit, temperature_unit = "C"))
+            end
+            push!(readerplates, ReaderPlate(readerplate_id = @sprintf("%s_%.2d",plate, time_step), readerplate_barcode = "", readerfile_name = datafile, readerplate_geometry = geometry, readercurves = readercurves))
+            readercurves = ReaderCurve[]
         end
-        push!(readerplates, ReaderPlate(readerplate_id = plate, readerplate_barcode = "", readerfile_name = datafile, readerplate_geometry = geometry, readercurves = readercurves))
-        readercurves = ReaderCurve[]
     end
-    ReaderRun(equipment="Vipr", software="", run_starttime=read_starttime, readerplate_geometry = geometry,readerplates= readerplates)
+        ReaderRun(equipment="Vipr", software="", run_starttime=read_starttime, readerplate_geometry = geometry,readerplates= readerplates)
 end
