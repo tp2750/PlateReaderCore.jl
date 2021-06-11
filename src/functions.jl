@@ -8,9 +8,9 @@
     - linreg_trim: linear regression omitting y_low_pct and y_high_pct of y range.
     - max_slope:
 """
-function rc_fit(r::ReaderRun, method::String; y_low_pct=10, y_high_pct=90, lambda = 1E-6, l4p_parameter=100, x_range=missing, y_range=missing )
+function rc_fit(r::ReaderRun, method::String; y_low_pct=10, y_high_pct=90, lambda = 1E-6, l4p_parameter=100, x_range=missing, y_range=missing, max_or_min=maximum)
     plate_fits = map(r.readerplates) do p
-        rc_fit(p, method;y_low_pct=y_low_pct, y_high_pct=y_high_pct, lambda=lambda, l4p_parameter=l4p_parameter,  x_range=x_range, y_range=y_range)
+        rc_fit(p, method;y_low_pct=y_low_pct, y_high_pct=y_high_pct, lambda=lambda, l4p_parameter=l4p_parameter,  x_range=x_range, y_range=y_range, max_or_min=max_or_min)
     end
     ReaderRunFit(
         equipment = r.equipment,
@@ -20,9 +20,9 @@ function rc_fit(r::ReaderRun, method::String; y_low_pct=10, y_high_pct=90, lambd
         readerplates = plate_fits
     )
 end
-function rc_fit(p::ReaderPlate, method::String; y_low_pct=10, y_high_pct=90, lambda = 1E-6, l4p_parameter=100,  x_range=missing, y_range=missing)
+function rc_fit(p::ReaderPlate, method::String; y_low_pct=10, y_high_pct=90, lambda = 1E-6, l4p_parameter=100,  x_range=missing, y_range=missing, max_or_min=maximum)
     curve_fits = map(p.readercurves) do rc
-        rc_fit(rc, method; y_low_pct=y_low_pct, y_high_pct=y_high_pct, lambda=lambda, l4p_parameter=l4p_parameter,  x_range=x_range, y_range=y_range)
+        rc_fit(rc, method; y_low_pct=y_low_pct, y_high_pct=y_high_pct, lambda=lambda, l4p_parameter=l4p_parameter,  x_range=x_range, y_range=y_range, max_or_min=max_or_min)
     end
     ReaderPlateFit(
         readerplate_id = p.readerplate_id,
@@ -32,7 +32,7 @@ function rc_fit(p::ReaderPlate, method::String; y_low_pct=10, y_high_pct=90, lam
         readercurves = curve_fits
     )
 end
-function rc_fit(rc::ReaderCurve, method::String; y_low_pct=10, y_high_pct=90, lambda = 1E-6, l4p_parameter=100, x_range=missing, y_range=missing)
+function rc_fit(rc::ReaderCurve, method::String; y_low_pct=10, y_high_pct=90, lambda = 1E-6, l4p_parameter=100, x_range=missing, y_range=missing, max_or_min=maximum)
     ## method dispatch options: https://discourse.julialang.org/t/dispatch-and-symbols/21162/7?u=tp2750
     (X,Y) = get_finite(rc.kinetic_time, rc.reader_value)
     if(length(Y) == 0)
@@ -40,7 +40,7 @@ function rc_fit(rc::ReaderCurve, method::String; y_low_pct=10, y_high_pct=90, la
             ReaderCurveFit(
                 readercurve = rc,
                 fit_method = method,
-                fit_input_parameters = (; y_low_pct=y_low_pct, y_high_pct=y_high_pct, lambda=lambda, l4p_parameter=l4p_parameter,  x_range=x_range, y_range=y_range), 
+                fit_input_parameters = (; y_low_pct=y_low_pct, y_high_pct=y_high_pct, lambda=lambda, l4p_parameter=l4p_parameter,  x_range=x_range, y_range=y_range, max_or_min=max_or_min), 
                 predict = t -> NaN,
                 slope = NaN,
                 intercept = NaN,
@@ -67,13 +67,13 @@ function rc_fit(rc::ReaderCurve, method::String; y_low_pct=10, y_high_pct=90, la
             )
         )
     elseif (method == "max_slope")
-        f1 = max_slope(X,Y)
+        f1 = max_slope(X,Y; max_or_min=max_or_min)
         pred_fun2(t) = f1.intercept + f1.slope * t
         return(
             ReaderCurveFit(
                 readercurve = rc,
                 fit_method = method,
-                fit_input_parameters = (;),
+                fit_input_parameters = (;max_or_min=max_or_min),
                 predict = pred_fun2,
                 slope = f1.slope,
                 intercept = f1.intercept,
@@ -116,7 +116,7 @@ function rc_fit(rc::ReaderCurve, method::String; y_low_pct=10, y_high_pct=90, la
         # pred_fun3(t) = SmoothingSplines.predict(f1,convert(Float64,t))
         f2 = smooth_spline_fit(X1,Y1; lambda = l1)
         pred_fun4(t) = PlateReaderCore.scale_fwd(SmoothingSplines.predict(f2,PlateReaderCore.scale_fwd(convert(Float64,t),X_range_in, X_range)), Y_range, Y_range_in) ## TODO update scale(x,r1,r2)
-        ms = max_slope(X,pred_fun4.(X))
+        ms = max_slope(X,pred_fun4.(X); max_or_min=max_or_min)
         return(
             ReaderCurveFit(
                 readercurve = rc,
@@ -201,13 +201,13 @@ function linreg_trim(x,y; y_low_pct=10, y_high_pct=90)
     linreg(X[idx], Y[idx])
 end
 
-function max_slope(x,y)
+function max_slope(x,y; max_or_min=maximum)
     X,Y = get_finite(x,y)
     if(length(Y) == 0)
         return(intercept = NaN, slope = NaN, inflectionpoint = (x=NaN,y=NaN))
     end
     slopes = diff(Y) ./ diff(X)
-    slope = maximum(slopes)
+    slope = max_or_min(slopes) ## maximum(slopes)
     slope_idx = findfirst(slopes .== slope)    
     b = y[slope_idx] - slope * x[slope_idx]
     (intercept = b,slope = slope, inflectionpoint = (x=x[slope_idx], y=y[slope_idx]))
