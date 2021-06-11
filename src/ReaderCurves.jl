@@ -225,6 +225,7 @@ well_names(p::ReaderPlate) =  map(x -> x.readerplate_well, p.readercurves)
 
 ## Copied from MTP.jl
 const LETTERS = string.(collect('A':'Z'))
+wells(rows, cols) = vec(string.(repeat(LETTERS[1:rows],outer = cols),lpad.(repeat(1:cols, inner=rows),2,"0")))
 
 function n_row(w)
     pat = r"(\D)(\d+)"
