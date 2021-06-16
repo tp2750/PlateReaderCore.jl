@@ -420,8 +420,8 @@ function read_table(file::String; sheet = 1)
 end
 xlsx(file::String; sheet = 1) = DataFrame(XLSX.readtable(file, sheet)...)
 
-xlsx_write(file::String, df::DataFrame) = XLSX.writetable(file, collect(DataFrames.eachcol(df)), DataFrames.names(df))
-xlsx_write(file::String, r::ReaderRun) = xlsx_write(file, DataFrame(r))
+xlsx_write(file::String, df::DataFrame; overwrite=false) = XLSX.writetable(file, collect(DataFrames.eachcol(df)), DataFrames.names(df); overwrite = overwrite)
+xlsx_write(file::String, r::ReaderRun; overwrite=false) = xlsx_write(file, DataFrame(r); overwrite = overwrite)
 
 ## Relative Activity
 
