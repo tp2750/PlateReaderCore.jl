@@ -13,6 +13,7 @@ function rc_fit(r::ReaderRun, method::String; y_low_pct=10, y_high_pct=90, lambd
         rc_fit(p, method;y_low_pct=y_low_pct, y_high_pct=y_high_pct, lambda=lambda, l4p_parameter=l4p_parameter,  x_range=x_range, y_range=y_range, max_or_min=max_or_min)
     end
     ReaderRunFit(
+        experiment_id = r.experiment_id,
         equipment = r.equipment,
         software = r.software,
         run_starttime = r.run_starttime,

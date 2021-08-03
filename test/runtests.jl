@@ -203,7 +203,7 @@ end
 end
 @testset "DataFrame from file" begin
     dat2_df = xlsx("dat_ex.xlsx"; sheet=1)
-    dat2 = ReaderRun(dat2_df)
+    dat2 = ReaderRun(@transform(dat2_df, experiment_id = :readerfile_name))
     @test length(dat2) == 1
 end
 @testset "Area undercurve" begin
