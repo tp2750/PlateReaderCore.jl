@@ -215,7 +215,7 @@ function Base.length(p::AbstractPlate)
     length(p.readercurves)
 end
 
-Base.length(r::ReaderRun) = length(r.readerplates)
+Base.length(r::AbstractRun) = length(r.readerplates)
 
 geometry(r::ReaderRun) = r.readerplate_geometry
 geometry(p::ReaderPlate) = p.readerplate_geometry
@@ -467,21 +467,37 @@ function RelativeActivity(t::ReaderCurveFit, r::ReaderCurveFit, method = "slope"
     end
 end
 
-function run_summary(run::AbstractRun)
-     run_summary(stdout, run::AbstractRun)
-end
 
 function run_summary(io::IO, run::AbstractRun)
     res = join([
-    "Plates: $(length(run))",
-    "Plate geometry: $(run.readerplate_geometry)",
-    "Equipment: $(run.equipment)",
-    "Software: $(run.software)",
-    "Run start time: $(run.run_starttime)"
+        "Run type: $(typeof(run))",
+        "Plates: $(length(run))",
+        "Plate geometry: $(run.readerplate_geometry)",
+        "Equipment: $(run.equipment)",
+        "Software: $(run.software)",
+        "Run start time: $(run.run_starttime)",
     ], "\n")
     print(io, res)
 end
+run_summary(run::AbstractRun) = run_summary(stdout, run::AbstractRun)
 
-function plate_summary(io::IO, plate::abstractPlate)
+function plate_summary(io::IO, plate::AbstractPlate)
+    res = join([
+        "Plate type: $(typeof(plate))",
+        "readerplate_id: $(plate.readerplate_id)",
+        "readerplate_barcode: $(plate.readerplate_barcode)",
+        "readerfile_name: $(plate.readerfile_name)",
+        "readerplate_geometry: $(plate.readerplate_geometry)",
+        "Number of readercurves: $(length(plate))",
+    ] ,"\n")
+    print(io, res)
+end
+plate_summary(plate::AbstractPlate) = plate_summary(stdout, plate::AbstractPlate)
 
+function plate_ids(run::AbstractRun)
+    [p.readerplate_id for p in run.readerplates]
+end
+
+function plate_barcodes(run::AbstractRun)
+    [p.readerplate_barcode for p in run.readerplates]
 end
