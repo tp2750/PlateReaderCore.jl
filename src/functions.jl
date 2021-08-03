@@ -320,3 +320,12 @@ end
 area_under_curve(rc::ReaderCurve) = area_under_curve(rc.kinetic_time, rc.reader_value)
 area_under_curve(rcf::ReaderCurveFit) = area_under_curve(rcf.readercurve.kinetic_time, rcf.predict.(rcf.readercurve.kinetic_time))
 area_under_curve_ratio(rcf::ReaderCurveFit) =  area_under_curve(rcf) / area_under_curve(rcf.readercurve)
+
+function r_square(obs, pred)
+    ## https://en.wikipedia.org/wiki/Coefficient_of_determination
+    @assert length(obs) == length(pred)
+    obs_mean = StatsBase.mean(obs) ## mean
+    ss_tot = sum( (obs .- obs_mean).^2 ) ## std dev of obs
+    ss_res = sum( (obs .- pred).^2 ) ## RMSD
+    1 - (ss_res / ss_tot) ## R^2
+end

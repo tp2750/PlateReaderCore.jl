@@ -195,6 +195,7 @@ function DataFrame(rcf::ReaderCurveFit;predict=false)
                          area_under_curve_ratio = area_under_curve_ratio(rcf),
                          area_under_readercurve = area_under_curve(rcf.readercurve),
                          area_under_fit_curve = area_under_curve(rcf),
+                         r_squared = r_square(rcf.readercurve.reader_value, rcf.predict.(rcf.readercurve.kinetic_time)),
                          )
         if rcf.fit_method == "smooth_spline"
             fits = @transform(fits, fit_parameters = JSON.json(rcf.fit_input_parameters))
