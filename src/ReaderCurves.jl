@@ -466,3 +466,22 @@ function RelativeActivity(t::ReaderCurveFit, r::ReaderCurveFit, method = "slope"
         error("RelativeActivity: This should never happen!")
     end
 end
+
+function run_summary(run::AbstractRun)
+     run_summary(stdout, run::AbstractRun)
+end
+
+function run_summary(io::IO, run::AbstractRun)
+    res = join([
+    "Plates: $(length(run))",
+    "Plate geometry: $(run.readerplate_geometry)",
+    "Equipment: $(run.equipment)",
+    "Software: $(run.software)",
+    "Run start time: $(run.run_starttime)"
+    ], "\n")
+    print(io, res)
+end
+
+function plate_summary(io::IO, plate::abstractPlate)
+
+end
