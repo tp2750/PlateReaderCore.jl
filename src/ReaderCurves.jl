@@ -134,6 +134,7 @@ end
 abstract type AbstractRun end
 
 Base.@kwdef struct ReaderRun <: AbstractRun
+    experiment_id::String
     equipment::String
     software::String
     run_starttime::Union{DateTime, Missing}
@@ -142,6 +143,7 @@ Base.@kwdef struct ReaderRun <: AbstractRun
 end
 
 Base.@kwdef struct ReaderRunFit <: AbstractRun
+    experiment_id::String
     equipment::String
     software::String
     run_starttime::Union{DateTime, Missing}
@@ -162,12 +164,14 @@ end
 
 function ReaderRun(df::DataFrame)
     cols_needed(df, setdiff(string.(fieldnames(ReaderRun)), ["readerplates"]), "ReaderRun(::DataFrame)")
+    @assert length(unique(df.experiment_id)) == 1
     @assert length(unique(df.equipment)) == 1
     @assert length(unique(df.software)) == 1
     @assert length(unique(df.run_starttime)) == 1
     @assert length(unique(df.readerplate_geometry)) == 1
     plates = ReaderPlates(df)
-    ReaderRun(equipment = first(unique(df.equipment)),
+    ReaderRun(experiment_id = first(unique(df.experiment_id)),
+              equipment = first(unique(df.equipment)),
               software = first(unique(df.software)),
               run_starttime = first(unique(df.run_starttime)),
               readerplate_geometry = first(unique(df.readerplate_geometry)),
@@ -472,6 +476,7 @@ function run_summary(io::IO, run::AbstractRun)
     res = join([
         "Run type: $(typeof(run))",
         "Plates: $(length(run))",
+        "experiment_id: $(run.experiment_id)",
         "Plate geometry: $(run.readerplate_geometry)",
         "Equipment: $(run.equipment)",
         "Software: $(run.software)",

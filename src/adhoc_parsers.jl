@@ -9,6 +9,7 @@ Def_vals = Dict("reader_temperature" => missing,
                 "equipment" => "unknown",
                 "software" => "unknown",
                 "run_starttime" => missing,
+                "experiment_id" => "",
                 )
 
 
