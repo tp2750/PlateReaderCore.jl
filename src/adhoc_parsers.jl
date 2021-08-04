@@ -19,6 +19,7 @@ function tapo_v1(xlsx_file_path, value_unit, time_unit = "sec", temperature_unit
                          equipment = equipment, software= software, run_starttime = run_starttime,
                          time_unit = time_unit, value_unit = value_unit, temperature_unit = temperature_unit,
                          readerplate_geometry = :geometry,
+                         experiment_id = string.(:readerfile_name),
                          readerplate_id = :readerfile_name, readerplate_well = :well_name,
                          kinetic_time = :kinetic_sec,
                          reader_value = :absorbance_value, reader_temperature = :reader_temperature_C, 
@@ -32,6 +33,7 @@ function srlx_gp(xlsx_file_path, value_unit, time_unit = "sec", temperature_unit
                          equipment = equipment, software= software, run_starttime = run_starttime,
                          time_unit = time_unit, value_unit = value_unit, temperature_unit = temperature_unit,
                          readerplate_geometry = Int64.(:geometry),
+                         experiment_id = string.(:readerfile_name),
                          readerplate_id = string.(:readerfile_name, :readerplate_number),
                          readerplate_well = string.(:well_name),
                          kinetic_time = Float64.(:kinetic_sec),
@@ -54,9 +56,9 @@ tsa2run(df::DataFrame; def_vals=Def_vals) = ReaderRun(tsa2df(df; def_vals = def_
 
 function vipr_trhs(data_file_path::String, platecount=6, timesteps=20, geometry=96; platenames = missing, time_unit = "ms", value_unit = "Pa", read_starttime = now()) 
     df =  PlateReaderCore.read_table(data_file_path)
-    vipr_trhs(df, platecount, timesteps, geometry; platenames = platenames, time_unit = time_unit, value_unit = value_unit, datafile = data_file_path,read_starttime = read_starttime)
+    vipr_trhs(df, platecount, timesteps, geometry; experiment_id = basename(data_file_path), platenames = platenames, time_unit = time_unit, value_unit = value_unit, datafile = data_file_path,read_starttime = read_starttime)
 end
-function vipr_trhs(df::DataFrame, platecount=6, timesteps=20, geometry=96; platenames = missing, time_unit = "ms", value_unit = "Pa", datafile = "", read_starttime = now())
+function vipr_trhs(df::DataFrame, platecount=6, timesteps=20, geometry=96; experiment_id = "", platenames = missing, time_unit = "ms", value_unit = "Pa", datafile = "", read_starttime = now())
     @assert ncol(df)-1 == platecount * timesteps * geometry ## first column is curve time-point. Each column is a vipr-curve
     kinetic_points = df.Time
     @debug "Found $(length(kinetic_points)) curve-points."
@@ -81,5 +83,5 @@ function vipr_trhs(df::DataFrame, platecount=6, timesteps=20, geometry=96; plate
             readercurves = ReaderCurve[]
         end
     end
-        ReaderRun(equipment="Vipr", software="", run_starttime=read_starttime, readerplate_geometry = geometry,readerplates= readerplates)
+        ReaderRun(experiment_id = experiment_id, equipment="Vipr", software="", run_starttime=read_starttime, readerplate_geometry = geometry,readerplates= readerplates)
 end
