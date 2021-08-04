@@ -212,7 +212,7 @@ end
 
 function DataFrame(rrf::ReaderRunFit;predict=false)
     plates = vcat([DataFrame(p;predict=predict) for p in rrf.readerplates]...)
-    @transform(plates, equipment = rrf.equipment, software = rrf.software, run_starttime = rrf.run_starttime, readerplate_geometry = rrf.readerplate_geometry)
+    @transform(plates, experiment_id = rrf.experiment_id, equipment = rrf.equipment, software = rrf.software, run_starttime = rrf.run_starttime, readerplate_geometry = rrf.readerplate_geometry)
 end
 
 
