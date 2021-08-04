@@ -2,6 +2,8 @@ using PlateReaderCore
 using Test
 using DataFrames, CSV, DataFramesMeta
 
+testdir =  joinpath(dirname(dirname(pathof(PlateReaderCore))),"test")
+
 @testset "PlateReaderCore.jl" begin
 
 end
@@ -91,7 +93,7 @@ end
     end    
 end
 @testset "Bubble" begin
-    B01_df = CSV.File("b01.csv") |> DataFrame
+    B01_df = CSV.File(joinpath(testdir,"b01.csv")) |> DataFrame
     B01 = ReaderCurve(readerplate_well = "B01",
                       kinetic_time = B01_df.kinetic_sec,
                       reader_value = B01_df.absorbance_value,
@@ -146,7 +148,7 @@ end
     @test length(Plate_1) == 3
 end
 @testset "DataFrames" begin
-    dat1_df = xlsx("dat1.xlsx"; sheet=1)
+    dat1_df = xlsx(joinpath(testdir,"dat1.xlsx"); sheet=1)
     dat1 = ReaderRun(
 	@transform(
 	    rename(dat1_df, :well_name => :readerplate_well, 
@@ -203,7 +205,7 @@ end
     @test isapprox(PlateReaderCore.scale_fwd(PlateReaderCore.scale_fwd(t1, extrema(t1), [0,1]), [0,1], extrema(t1)), t1) ## OBS signature!
 end
 @testset "DataFrame from file" begin
-    dat2_df = xlsx("dat_ex.xlsx"; sheet=1)
+    dat2_df = xlsx(joinpath(testdir,"dat_ex.xlsx"); sheet=1)
     dat2 = ReaderRun(@transform(dat2_df, experiment_id = :readerfile_name))
     @test length(dat2) == 1
 end
