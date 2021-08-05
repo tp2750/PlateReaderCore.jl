@@ -284,7 +284,7 @@ function scale_rev(X;x_range)
 end
 
 ## Simulat ea Hill-type function with slight initial concavity
-function sim_hill(; points=100, xmin = 0, xmax = 100, ymin = 0, ymax = 4, sd = 0.05, well = "A01", seed=missing)
+function sim_hill(; points=100, xmin = 0, xmax = 100, ymin = 0, ymax = 4, sd = 0.05, well = "A01", convex = 1/10, concave = 1/5, seed=missing)
     if !ismissing(seed)
         Random.seed!(seed)
     end
@@ -292,8 +292,8 @@ function sim_hill(; points=100, xmin = 0, xmax = 100, ymin = 0, ymax = 4, sd = 0
     dy = ymax - ymin
     xstep = dx/points
     t = collect(xmin:xstep:xmax);
-    y_1 = PlateReaderCore.rc_exp.(t .- xmin, sqrt(dy),dx/5,ymin) ;
-    y_2 = PlateReaderCore.rc_exp.(t .- xmin, sqrt(dy),dx/10,ymin) ;
+    y_1 = PlateReaderCore.rc_exp.(t .- xmin, sqrt(dy),dx*concave,ymin) ;
+    y_2 = PlateReaderCore.rc_exp.(t .- xmin, sqrt(dy),dx*convex,ymin) ;
     y = y_1.*y_2 .+ rand.(Normal.(0, sd));
     well = ReaderCurve(readerplate_well = well,
                        kinetic_time = t,
@@ -334,11 +334,15 @@ end
     sub_curve(rc::ReaderCurve, keep_steps::Vector{Int})
     Extract a sub-curve of a reader-curve by keeping only the supplied steps
 """
-function sub_curve(rc::ReaderCurve, keep_steps::Vector{Int})
+function sub_curve(rc::ReaderCurve, keep_steps::Vector{Int}; add_to_values = missing)
+    new_values = rc.reader_value[keep_steps]
+    if !ismissing(add_to_values)
+        new_values = new_values .+ add_to_values
+    end
     ReaderCurve(
         readerplate_well = rc.readerplate_well,
         kinetic_time = rc.kinetic_time[keep_steps],
-        reader_value = rc.reader_value[keep_steps],
+        reader_value = new_values,
         reader_temperature = length(rc.reader_temperature) == 1 ? rc.reader_temperature : rc.reader_temperature[keep_steps],
         time_unit = rc.time_unit,
         value_unit = rc.value_unit,
@@ -354,10 +358,39 @@ end
     4. Evaluate mean residual over test-point (no noice)
     This does not us the
 """
-function cross_validate(rc::ReaderCurve, method::String; keep_fraction = 0.5, fit_args...)
-    step_size = floor(1 / keep_fraction)
-    train_steps = collect(1:step_size:length(rc))
-    test_steps = setdiff(1:length(rc), train_steps)
-    train_curve = sub_curve(rc, train_steps)
+function cross_validate(rc::ReaderCurve, method::String, sd::Float64 = 0.05, keep_fraction = 0.5; fit_args...)
+    # step_size = trunc(Int, 1 / keep_fraction)
+    # train_steps = collect(1:step_size:length(rc))
+    # test_steps = train_steps
+    # if step_size > 1
+    #     test_steps = setdiff(1:length(rc), train_steps)
+    # end
+    (step_size, train_steps, test_steps) = get_steps(rc, keep_fraction)
+    train_fit = cross_validate_curve(rc, method, sd, keep_fraction;fit_args...)
+    test_residuals = abs.(train_fit.predict.(rc.kinetic_time[test_steps]) .- rc.reader_value[test_steps])
+    (; noise_sd = sd, keep_fraction = keep_fraction, keep_length = length(train_steps), curve_length = length(rc), mean_residual = mean(test_residuals), method = method, fit_args...)
+end
 
+function cross_validate(rc::ReaderCurve, method::String, samples::Int, sd::Float64 = 0.05, keep_fraction::Float64 = 0.5; fit_args...)
+    my_samples = [cross_validate(rc, method, sd, keep_fraction; fit_args...) for x in 1:samples]
+    sample_residuals = map(x -> x.mean_residual, my_samples)
+    mean_residual_mean = mean(sample_residuals)
+    mean_residual_stdev = std(sample_residuals)
+    (;noise_sd = sd, keep_fraction = keep_fraction, keep_length = first(my_samples).keep_length, curve_length = first(my_samples).curve_length, samples = samples, mean_residual_mean = mean_residual_mean, mean_residual_stdev = mean_residual_stdev, method= method, fit_args...)
+end
+
+function cross_validate_curve(rc::ReaderCurve, method::String, sd::Float64 = 0.05, keep_fraction::Float64 = 0.5; fit_args...)
+    (step_size, train_steps, test_steps) = get_steps(rc, keep_fraction)
+    train_curve = sub_curve(rc, train_steps; add_to_values = rand(Normal(0,sd), length(train_steps)))
+    train_fit = rc_fit(train_curve, method; fit_args...)
+    train_fit
+end
+function get_steps(rc, keep_fraction)
+    step_size = trunc(Int, 1 / keep_fraction)
+    train_steps = collect(1:step_size:length(rc))
+    test_steps = train_steps
+    if step_size > 1
+        test_steps = setdiff(1:length(rc), train_steps)
+    end
+    (step_size, train_steps, test_steps)
 end
