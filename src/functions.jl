@@ -1,4 +1,4 @@
-""" 
+"""
     rc_fit(::ReaderCurve, method::String; y_low_pct=10, y_high_pct=90, lambda = 250, l4p_parameter=100)
     rc_fit(::ReaderPlate, method::String; y_low_pct=10, y_high_pct=90, lambda = 250, l4p_parameter=100)
     Fit a readercurve, plate of reader curves or a full run
@@ -41,7 +41,7 @@ function rc_fit(rc::ReaderCurve, method::String; y_low_pct=10, y_high_pct=90, la
             ReaderCurveFit(
                 readercurve = rc,
                 fit_method = method,
-                fit_input_parameters = (; y_low_pct=y_low_pct, y_high_pct=y_high_pct, lambda=lambda, l4p_parameter=l4p_parameter,  x_range=x_range, y_range=y_range, max_or_min=max_or_min), 
+                fit_input_parameters = (; y_low_pct=y_low_pct, y_high_pct=y_high_pct, lambda=lambda, l4p_parameter=l4p_parameter,  x_range=x_range, y_range=y_range, max_or_min=max_or_min),
                 predict = t -> NaN,
                 slope = NaN,
                 intercept = NaN,
@@ -148,7 +148,7 @@ function rc_fit(rc::ReaderCurve, method::String; y_low_pct=10, y_high_pct=90, la
                 inflectionpoint = ms.inflectionpoint,
                 fit_mean_absolute_residual = mean(abs.(pred_l4p.(X) .- Y))
             )
-        )        
+        )
     else
         error("This should not happen")
     end
@@ -209,7 +209,7 @@ function max_slope(x,y; max_or_min=maximum)
     end
     slopes = diff(Y) ./ diff(X)
     slope = max_or_min(slopes) ## maximum(slopes)
-    slope_idx = findfirst(slopes .== slope)    
+    slope_idx = findfirst(slopes .== slope)
     b = y[slope_idx] - slope * x[slope_idx]
     (intercept = b,slope = slope, inflectionpoint = (x=x[slope_idx], y=y[slope_idx]))
 end
@@ -219,7 +219,7 @@ function get_finite(x,y)
     X = x[y_finite]
     Y = y[y_finite]
     (X,Y)
-end    
+end
 
 function rc_logistic_fun(t,p)
     @. p[1]/(1+exp(4*p[2]/p[1]*(p[3]-t)+2))+p[4] # logistic
@@ -328,4 +328,36 @@ function r_square(obs, pred)
     ss_tot = sum( (obs .- obs_mean).^2 ) ## std dev of obs
     ss_res = sum( (obs .- pred).^2 ) ## RMSD
     1 - (ss_res / ss_tot) ## R^2
+end
+
+"""
+    sub_curve(rc::ReaderCurve, keep_steps::Vector{Int})
+    Extract a sub-curve of a reader-curve by keeping only the supplied steps
+"""
+function sub_curve(rc::ReaderCurve, keep_steps::Vector{Int})
+    ReaderCurve(
+        readerplate_well = rc.readerplate_well,
+        kinetic_time = rc.kinetic_time[keep_steps],
+        reader_value = rc.reader_value[keep_steps],
+        reader_temperature = length(rc.reader_temperature) == 1 ? rc.reader_temperature : rc.reader_temperature[keep_steps],
+        time_unit = rc.time_unit,
+        value_unit = rc.value_unit,
+        temperature_unit = rc.temperature_unit,
+    )
+end
+
+"""
+    cross_validate(rc::ReaderCurve, method::String, sd=0.05; keep_fraction = 0.5, fit_args...)
+    1. Subsample the readercurve according to the keep_fraction
+    2. Add random noice to "training points"
+    3. Fit using method and fit_args to noice training points
+    4. Evaluate mean residual over test-point (no noice)
+    This does not us the
+"""
+function cross_validate(rc::ReaderCurve, method::String; keep_fraction = 0.5, fit_args...)
+    step_size = floor(1 / keep_fraction)
+    train_steps = collect(1:step_size:length(rc))
+    test_steps = setdiff(1:length(rc), train_steps)
+    train_curve = sub_curve(rc, train_steps)
+
 end

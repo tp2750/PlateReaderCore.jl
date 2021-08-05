@@ -7,7 +7,7 @@
     reader_temperature::Array{Union{Missing, Real}} = [missing]
     time_unit::String
     value_unit::String
-    temperature_unit::String = "C"    
+    temperature_unit::String = "C"
 """
 Base.@kwdef struct ReaderCurve
     readerplate_well::String = "well"
@@ -128,7 +128,7 @@ Base.@kwdef struct ReaderFile
     equipment::String
     software::String
     run_starttime::Union{DateTime, Missing}
-    readerplates::Array{ReaderPlate,1} 
+    readerplates::Array{ReaderPlate,1}
 end
 
 abstract type AbstractRun end
@@ -139,7 +139,7 @@ Base.@kwdef struct ReaderRun <: AbstractRun
     software::String
     run_starttime::Union{DateTime, Missing}
     readerplate_geometry::Int64
-    readerplates::Array{ReaderPlate,1} 
+    readerplates::Array{ReaderPlate,1}
 end
 
 Base.@kwdef struct ReaderRunFit <: AbstractRun
@@ -148,7 +148,7 @@ Base.@kwdef struct ReaderRunFit <: AbstractRun
     software::String
     run_starttime::Union{DateTime, Missing}
     readerplate_geometry::Int64
-    readerplates::Array{ReaderPlateFit,1} 
+    readerplates::Array{ReaderPlateFit,1}
 end
 
 
@@ -221,6 +221,7 @@ function Base.length(p::AbstractPlate)
 end
 
 Base.length(r::AbstractRun) = length(r.readerplates)
+Base.length(rc::ReaderCurve) = length(rc.kinetic_time)
 
 geometry(r::ReaderRun) = r.readerplate_geometry
 geometry(p::ReaderPlate) = p.readerplate_geometry
@@ -266,7 +267,7 @@ function well96(w::String, geometry=384)
         return(w)
     end
     (r,c) = n_rc(w)
-    r2 = floor(Int, (r-1)/2) +1 
+    r2 = floor(Int, (r-1)/2) +1
     c2 = floor(Int, (c-1)/2) +1
     LETTERS[r2]*lpad(c2,2,"0")
 end
@@ -384,7 +385,7 @@ end
     xrange: range of kinetic_time over curve, plate or run
     Returns [xmin, xmax]
 """
-xrange(c::ReaderCurve) = [minimum(c.kinetic_time), maximum(c.kinetic_time)]    
+xrange(c::ReaderCurve) = [minimum(c.kinetic_time), maximum(c.kinetic_time)]
 function xrange(p::AbstractPlate)
     xmin = Inf
     xmax = -Inf
@@ -443,7 +444,7 @@ xlsx_write(file::String, r::ReaderRun; overwrite=false) = xlsx_write(file, DataF
     relative_activity_method::String      how it was computed
 """
 Base.@kwdef struct RelativeActivity
-    relative_activity_id::String 
+    relative_activity_id::String
     relative_activity_value::Real
     test_activity::ReaderCurveFit
     reference_activity::ReaderCurveFit

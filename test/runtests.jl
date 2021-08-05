@@ -18,6 +18,7 @@ end
                       value_unit = "OD405nm",
                       )
     @test A01.reader_value[11] == 0.05 + 4 * (1 - exp(-1))
+    @test length(PlateReaderCore.sub_curve(A01, [1,2,3])) == 3
     @testset "Fit" begin
         A01_fit1 = rc_fit(A01,"linreg_trim")
         A01_fit2 = rc_fit(A01,"max_slope")
@@ -81,7 +82,7 @@ end
         readerplate_geometry = 96,
         readercurves = [A02,A03,A04,A05]
         )
-        
+
         Plate_3 = ReaderPlateFit(
         readerplate_id = "1117389a-9abe-4cf9-9feb-ec7fa1aa0931",
         readerplate_barcode = "",
@@ -89,8 +90,8 @@ end
         readerplate_geometry = 96,
         readercurves = [A02_fit3,A03_fit3,A04_fit3,A05_fit3]
         )
-        
-    end    
+
+    end
 end
 @testset "Bubble" begin
     B01_df = CSV.File(joinpath(testdir,"b01.csv")) |> DataFrame
@@ -144,24 +145,24 @@ end
         readerplate_geometry = 96,
         readercurves = [rc_fit(A01, "smooth_spline"), rc_fit(A02, "smooth_spline"), rc_fit(A03, "smooth_spline")]
     )
-    
+
     @test length(Plate_1) == 3
 end
 @testset "DataFrames" begin
     dat1_df = xlsx(joinpath(testdir,"dat1.xlsx"); sheet=1)
     dat1 = ReaderRun(
 	@transform(
-	    rename(dat1_df, :well_name => :readerplate_well, 
-		   :geometry => :readerplate_geometry, 
-		   :kinetic_sec => :kinetic_time, 
-		   :absorbance_value => :reader_value, 
+	    rename(dat1_df, :well_name => :readerplate_well,
+		   :geometry => :readerplate_geometry,
+		   :kinetic_sec => :kinetic_time,
+		   :absorbance_value => :reader_value,
 		   :reader_temperature_C => :reader_temperature,
-                   ), 
-	    equipment = "Neo2", 
-	    software="Gen5", 
+                   ),
+	    equipment = "Neo2",
+	    software="Gen5",
 	    run_starttime = missing,
-	    time_unit = "sec", 
-	    value_unit = "OD405nm", 
+	    time_unit = "sec",
+	    value_unit = "OD405nm",
 	    temperature_unit="C",
 	    readerplate_id = :readerfile_name,
             experiment_id = "Test01"
