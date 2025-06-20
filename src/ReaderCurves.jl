@@ -416,7 +416,7 @@ function read_table(file::String; sheet = 1)
     elseif (endswith(file, ".csv") || endswith(file, ".csv2"))
         return( DataFrame(CSV.File(file)) )
     elseif (endswith(file, ".csv.gz") || endswith(file, ".csv2.gz"))
-        df = GZip.open(file, "r") do io
+        df = CodecZlib.open(file, "r") do io
             CSV.File(io) |> DataFrame
         end
         return(df)
