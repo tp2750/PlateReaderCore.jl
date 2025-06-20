@@ -1,7 +1,7 @@
 module PlateReaderCore
 
 using CSV, Statistics, SmoothingSplines, DataFrames, DataFramesMeta, Dates, Printf, LsqFit, XLSX, Hyperscript
-using Distributions, Random, GZip, JSON
+using Distributions, Random, GZip, JSON, CodecZlib
 import Setfield
 
 include("ReaderCurves.jl")
